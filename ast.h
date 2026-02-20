@@ -12,7 +12,7 @@ typedef enum {
     NODE_CHAR_LITERAL,
     NODE_VARIABLE,
     NODE_BINARY_OP,
-    NODE Unary_OP,
+    NODE_UNARY_OP,
     NODE_ASSIGNMENT,
     NODE_IF,
     NODE_WHILE,

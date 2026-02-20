@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -272,6 +273,7 @@ static ASTNode* parseStatement(Parser* parser, SymbolTable* table);
 
 // 解析代码块
 static ASTNode* parseBlock(Parser* parser, SymbolTable* table) {
+    (void)table;  // 使用本地符号表
     expect(parser, TOKEN_LBRACE);
 
     SymbolTable localTable;
