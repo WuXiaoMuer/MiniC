@@ -128,6 +128,7 @@ int main(int argc, char* argv[]) {
 
     // 词法分析
     Lexer lexer;
+    printf("Initializing lexer...\n");
     initLexer(&lexer, source);
 
     printf("=== Lexical Analysis ===\n");
@@ -148,15 +149,24 @@ int main(int argc, char* argv[]) {
     } while (token.type != TOKEN_EOF);
     printf("Total tokens: %d\n\n", tokenCount);
 
+    printf("Reinitializing lexer for parsing...\n");
+
     // 重新初始化lexer用于语法分析
     initLexer(&lexer, source);
 
     // 语法分析
+    printf("Initializing parser...\n");
     Parser parser;
     initParser(&parser, &lexer);
 
     printf("=== Parsing ===\n");
+    printf("Starting parse...\n");
+    fflush(stdout);
+
     ASTNode* ast = parse(&parser);
+    printf("Parse returned, checking result...\n");
+    fflush(stdout);
+
     if (!ast) {
         printf("Parsing failed!\n");
         free(source);
@@ -164,18 +174,28 @@ int main(int argc, char* argv[]) {
     }
     printf("Parsing successful!\n\n");
 
-    // 打印AST（用于调试）
+    // 打印AST（用于调试）- 临时禁用以排查问题
     printf("=== Abstract Syntax Tree ===\n");
-    printAST(ast, 0);
-    printf("\n");
+    printf("AST pointer: %p\n", (void*)ast);
+    printf("AST type: %d\n", ast ? ast->type : -1);
+    printf("Skipping AST print for debugging...\n\n");
+    fflush(stdout);
 
     // 代码生成
     CodeGen codegen;
+    printf("=== Code Generation ===\n");
+    printf("Initializing code generator...\n");
+    fflush(stdout);
+
     initCodeGen(&codegen, stdout);
 
-    printf("=== Code Generation ===\n");
+    printf("Generating code...\n");
+    fflush(stdout);
+
     generateCode(&codegen, ast);
+
     printf("Assembly code generated!\n");
+    fflush(stdout);
 
     // 清理
     freeAST(ast);

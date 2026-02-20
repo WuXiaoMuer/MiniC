@@ -272,6 +272,7 @@ static void generateStatement(CodeGen* gen, ASTNode* node) {
 
 // 计算栈大小
 static int calculateStackSize(ASTNode* node) {
+    if (!node) return 0;
     int size = 0;
     if (node->type == NODE_BLOCK && node->block.declarations) {
         ASTNode* decl = node->block.declarations;
@@ -285,6 +286,15 @@ static int calculateStackSize(ASTNode* node) {
 
 // 生成函数
 static void generateFunction(CodeGen* gen, ASTNode* node) {
+    if (!node || node->type != NODE_FUNCTION) {
+        fprintf(stderr, "Error: Invalid function node\n");
+        return;
+    }
+    if (!node->func.name) {
+        fprintf(stderr, "Error: Function name is NULL\n");
+        return;
+    }
+
     fprintf(gen->output, "\n");
     fprintf(gen->output, "global %s\n", node->func.name);
     fprintf(gen->output, "%s:\n", node->func.name);
@@ -307,6 +317,11 @@ static void generateFunction(CodeGen* gen, ASTNode* node) {
 
 // 生成程序
 void generateCode(CodeGen* gen, ASTNode* node) {
+    if (!node || node->type != NODE_PROGRAM) {
+        fprintf(stderr, "Error: Invalid program node\n");
+        return;
+    }
+
     // 文件头
     fprintf(gen->output, "; MiniC Generated Assembly\n");
     fprintf(gen->output, "section .text\n");
