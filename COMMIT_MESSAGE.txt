@@ -1,0 +1,11 @@
+fix: Fix GitHub Actions assembly extraction issue
+
+- Use awk to extract assembly section from full output
+- This prevents debug messages from mixing into assembly file
+- Save full compiler output to compiler-output.txt for debugging
+- Simplify workflow into clear stages
+- Remove test-minimal.s (was not properly checked in)
+- Add WORKFLOW_DEBUG.md to explain the fix
+
+The key insight: when using > hello.s, all output goes to file.
+Using awk to extract the assembly section fixes NASM parsing errors.
