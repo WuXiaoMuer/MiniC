@@ -1,4 +1,4 @@
-name: Build and Test
+name: Debug Assembly Generation
 
 on:
   push:
@@ -21,19 +21,58 @@ jobs:
     - name: Build compiler
       run: gcc -Wall -Wextra -std=c99 -o minic *.c
 
-    - name: Test hello (basic)
+    - name: Test NASM with minimal assembly
       run: |
-        echo "Testing hello.c..."
-        set -x  # Echo commands
-        timeout 10 ./minic demo/hello.c > hello.s 2>&1 || {
-            echo "Exit code: $?"
-            cat hello.s || true
+        echo "=== Testing minimal.s ==="
+        cat test-minimal.s
+        nasm -f elf32 test-minimal.s -o test-minimal.o
+        gcc -m32 test-minimal.o -o test-minimal
+        ./test-minimal
+        RESULT=$?
+        echo "Exit code: $RESULT"
+        [ $RESULT -eq 42 ] && echo "✓ Minimal assembly works!" || echo "✗ Minimal assembly failed"
+
+    - name: Run compiler with full output capture
+      run: |
+        echo ""
+        echo "=== Running minic and capturing ALL output ==="
+        ./minic demo/hello.c > full-output.txt 2>&1
+
+        echo ""
+        echo "=== Full output from compiler ==="
+        cat full-output.txt
+
+    - name: Extract and test assembly
+      run: |
+        echo ""
+        echo "=== Extracting assembly section ==="
+        # 提取从 "; MiniC Generated Assembly" 到文件末尾
+        sed -n '/; MiniC Generated Assembly/,$ p' full-output.txt > hello.s
+
+        echo ""
+        echo "=== Extracted Assembly ==="
+        cat hello.s
+        echo ""
+        echo "=== Assembly file size ==="
+        wc -l hello.s
+
+        echo ""
+        echo "=== Attempting to assemble ==="
+        nasm -f elf32 hello.s -o hello.o 2>&1 || {
+            echo ""
+            echo "=== Assembly failed, showing file content ==="
+            cat hello.s
             exit 1
         }
-        cat hello.s
-        nasm -f elf32 hello.s -o hello.o
+        echo "Assembly successful!"
+
+        echo ""
+        echo "=== Linking ==="
         gcc -m32 hello.o -o hello
+        echo "Linking successful!"
+
+        echo ""
+        echo "=== Running program ==="
         ./hello
         RESULT=$?
         echo "Exit code: $RESULT"
-        [ $RESULT -eq 42 ] && echo "✓ hello test passed" || echo "✗ hello test failed (expected 42, got $RESULT)"
