@@ -14,10 +14,23 @@ ASTNode* createProgram(ASTNode* functions) {
 
 // 创建函数节点
 ASTNode* createFunction(char* name, DataType returnType, ASTNode* params, ASTNode* body) {
+    if (!name) {
+        fprintf(stderr, "Error: Function name is NULL\n");
+        return NULL;
+    }
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    if (!node) {
+        fprintf(stderr, "Error: malloc failed in createFunction\n");
+        return NULL;
+    }
     node->type = NODE_FUNCTION;
     node->dataType = returnType;
     node->func.name = strdup(name);
+    if (!node->func.name) {
+        fprintf(stderr, "Error: strdup failed in createFunction for %s\n", name);
+        free(node);
+        return NULL;
+    }
     node->func.params = params;
     node->func.body = body;
     return node;
@@ -25,10 +38,23 @@ ASTNode* createFunction(char* name, DataType returnType, ASTNode* params, ASTNod
 
 // 创建参数节点
 ASTNode* createParam(char* name, DataType type) {
+    if (!name) {
+        fprintf(stderr, "Error: Param name is NULL\n");
+        return NULL;
+    }
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    if (!node) {
+        fprintf(stderr, "Error: malloc failed in createParam\n");
+        return NULL;
+    }
     node->type = NODE_PARAM;
     node->dataType = type;
     node->var.name = strdup(name);
+    if (!node->var.name) {
+        fprintf(stderr, "Error: strdup failed in createParam for %s\n", name);
+        free(node);
+        return NULL;
+    }
     node->var.next = NULL;
     node->var.init = NULL;
     return node;
@@ -63,9 +89,22 @@ ASTNode* createCharLiteral(char value) {
 
 // 创建变量引用
 ASTNode* createVariable(char* name) {
+    if (!name) {
+        fprintf(stderr, "Error: Variable name is NULL\n");
+        return NULL;
+    }
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    if (!node) {
+        fprintf(stderr, "Error: malloc failed in createVariable\n");
+        return NULL;
+    }
     node->type = NODE_VARIABLE;
     node->var.name = strdup(name);
+    if (!node->var.name) {
+        fprintf(stderr, "Error: strdup failed in createVariable\n");
+        free(node);
+        return NULL;
+    }
     node->var.next = NULL;
     node->var.init = NULL;
     return node;
@@ -93,9 +132,22 @@ ASTNode* createUnaryOp(Operator op, ASTNode* expr) {
 
 // 创建赋值语句
 ASTNode* createAssignment(char* name, ASTNode* expr) {
+    if (!name) {
+        fprintf(stderr, "Error: Assignment name is NULL\n");
+        return NULL;
+    }
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    if (!node) {
+        fprintf(stderr, "Error: malloc failed in createAssignment\n");
+        return NULL;
+    }
     node->type = NODE_ASSIGNMENT;
     node->var.name = strdup(name);
+    if (!node->var.name) {
+        fprintf(stderr, "Error: strdup failed in createAssignment for %s\n", name);
+        free(node);
+        return NULL;
+    }
     node->var.init = expr;
     node->var.next = NULL;
     return node;
@@ -141,9 +193,22 @@ ASTNode* createReturn(ASTNode* expr) {
 
 // 创建函数调用
 ASTNode* createCall(char* name, ASTNode* args) {
+    if (!name) {
+        fprintf(stderr, "Error: Call name is NULL\n");
+        return NULL;
+    }
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    if (!node) {
+        fprintf(stderr, "Error: malloc failed in createCall\n");
+        return NULL;
+    }
     node->type = NODE_CALL;
     node->var.name = strdup(name);
+    if (!node->var.name) {
+        fprintf(stderr, "Error: strdup failed in createCall for %s\n", name);
+        free(node);
+        return NULL;
+    }
     node->var.init = NULL;
     node->var.next = NULL;
     node->call.funcName = createVariable(name);

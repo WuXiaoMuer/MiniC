@@ -43,7 +43,7 @@ static void printAST(ASTNode* node, int indent) {
             printAST(node->program.functions, indent + 1);
             break;
         case NODE_FUNCTION:
-            printf("Function: %s\n", node->func.name);
+            printf("Function: %s\n", node->func.name ? node->func.name : "(null)");
             printf("  Params:\n");
             printAST(node->func.params, indent + 2);
             printf("  Body:\n");
@@ -61,10 +61,10 @@ static void printAST(ASTNode* node, int indent) {
             printf("Char: '%c'\n", node->charVal);
             break;
         case NODE_VARIABLE:
-            printf("Variable: %s\n", node->var.name);
+            printf("Variable: %s\n", node->var.name ? node->var.name : "(null)");
             break;
         case NODE_ASSIGNMENT:
-            printf("Assignment: %s\n", node->var.name);
+            printf("Assignment: %s\n", node->var.name ? node->var.name : "(null)");
             printAST(node->var.init, indent + 1);
             break;
         case NODE_IF:
@@ -157,6 +157,11 @@ int main(int argc, char* argv[]) {
 
     printf("=== Parsing ===\n");
     ASTNode* ast = parse(&parser);
+    if (!ast) {
+        printf("Parsing failed!\n");
+        free(source);
+        return 1;
+    }
     printf("Parsing successful!\n\n");
 
     // 打印AST（用于调试）
