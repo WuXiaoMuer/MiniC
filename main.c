@@ -31,6 +31,7 @@ static char* readFile(const char* filename) {
     return buffer;
 }
 
+#if 0  // Temporarily disabled - not used and causes warnings
 // 打印AST（简化版）
 static void printAST(ASTNode* node, int indent) {
     if (!node) return;
@@ -109,6 +110,7 @@ static void printAST(ASTNode* node, int indent) {
         printAST(node->var.next, indent);
     }
 }
+#endif  // Temporarily disabled
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -177,7 +179,11 @@ int main(int argc, char* argv[]) {
     // 打印AST（用于调试）- 临时禁用以排查问题
     printf("=== Abstract Syntax Tree ===\n");
     printf("AST pointer: %p\n", (void*)ast);
-    printf("AST type: %d\n", ast ? ast->type : -1);
+    if (ast) {
+        printf("AST type: %d\n", (int)ast->type);
+    } else {
+        printf("AST type: -1\n");
+    }
     printf("Skipping AST print for debugging...\n\n");
     fflush(stdout);
 

@@ -229,7 +229,6 @@ static void generateReturn(CodeGen* gen, ASTNode* node) {
     if (node->returnStmt.expr) {
         generateExpression(gen, node->returnStmt.expr);
     }
-    fprintf(gen->output, "    leave\n");
     fprintf(gen->output, "    ret\n");
 }
 
@@ -286,8 +285,12 @@ static int calculateStackSize(ASTNode* node) {
 
 // 生成函数
 static void generateFunction(CodeGen* gen, ASTNode* node) {
-    if (!node || node->type != NODE_FUNCTION) {
-        fprintf(stderr, "Error: Invalid function node\n");
+    if (!node) {
+        fprintf(stderr, "Error: NULL function node\n");
+        return;
+    }
+    if (node->type != NODE_FUNCTION) {
+        fprintf(stderr, "Error: Expected NODE_FUNCTION, got %d\n", node->type);
         return;
     }
     if (!node->func.name) {
@@ -309,10 +312,9 @@ static void generateFunction(CodeGen* gen, ASTNode* node) {
 
     generateBlock(gen, node->func.body);
 
-    if (node->dataType != TYPE_VOID) {
-        fprintf(gen->output, "    leave\n");
-        fprintf(gen->output, "    ret\n");
-    }
+    // 函数末尾的 leave ret（如果有显式 return，它只会生成 ret）
+    fprintf(gen->output, "    leave\n");
+    fprintf(gen->output, "    ret\n");
 }
 
 // 生成程序
