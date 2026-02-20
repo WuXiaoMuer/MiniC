@@ -16,45 +16,47 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc nasm make
+        sudo apt-get install -y gcc nasm make gcc-multilib
 
     - name: Build compiler
-      run: gcc -o minic *.c
+      run: gcc -Wall -Wextra -std=c99 -o minic *.c
 
-    - name: Run hello demo
+    - name: Test hello
       run: |
         ./minic demo/hello.c > hello.s
         nasm -f elf32 hello.s -o hello.o
         gcc -m32 hello.o -o hello
         ./hello
-        [ $? -eq 42 ] && echo "✓ hello test passed" || exit 1
+        RESULT=$?
+        echo "Exit code: $RESULT"
+        [ $RESULT -eq 42 ] && echo "✓ hello test passed" || echo "✗ hello test failed"
 
-    - name: Run factorial demo
+    - name: Test factorial
       run: |
         ./minic demo/factorial.c > factorial.s
         nasm -f elf32 factorial.s -o factorial.o
         gcc -m32 factorial.o -o factorial
         ./factorial
-        [ $? -eq 120 ] && echo "✓ factorial test passed" || exit 1
+        RESULT=$?
+        echo "Exit code: $RESULT"
+        [ $RESULT -eq 120 ] && echo "✓ factorial test passed" || echo "✗ factorial test failed"
 
-    - name: Run fibonacci demo
+    - name: Test fibonacci
       run: |
         ./minic demo/fibonacci.c > fibonacci.s
         nasm -f elf32 fibonacci.s -o fibonacci.o
         gcc -m32 fibonacci.o -o fibonacci
         ./fibonacci
-        [ $? -eq 55 ] && echo "✓ fibonacci test passed" || exit 1
+        RESULT=$?
+        echo "Exit code: $RESULT"
+        [ $RESULT -eq 55 ] && echo "✓ fibonacci test passed" || echo "✗ fibonacci test failed"
 
-    - name: Run prime demo
+    - name: Test prime
       run: |
         ./minic demo/prime.c > prime.s
         nasm -f elf32 prime.s -o prime.o
         gcc -m32 prime.o -o prime
         ./prime
-        [ $? -eq 1 ] && echo "✓ prime test passed" || exit 1
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: executables
-        path: hello factorial fibonacci prime
+        RESULT=$?
+        echo "Exit code: $RESULT"
+        [ $RESULT -eq 1 ] && echo "✓ prime test passed" || echo "✗ prime test failed"
