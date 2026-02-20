@@ -28,12 +28,15 @@ jobs:
 
         echo ""
         echo "=== Extracting assembly from output ==="
-        # Extract only the assembly section (after "; MiniC Generated Assembly")
-        awk '/; MiniC Generated Assembly/,0' compiler-output.txt > hello.s
+        # Simple extraction: from marker to end, then filter debug lines
+        awk '/; MiniC Generated Assembly/,/section \.data/' compiler-output.txt > hello.s
 
         echo ""
         echo "=== Extracted assembly (hello.s) ==="
         cat hello.s
+        echo ""
+        echo "=== Line count ==="
+        wc -l hello.s
 
     - name: Assemble and link
       run: |
